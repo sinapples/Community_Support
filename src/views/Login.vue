@@ -1,25 +1,31 @@
 <template>
   <div class="page-wrapper">
-    <h1 class="login-page-title">Login page</h1>
+    <v-card>
+
+    <v-card-title class="login-page-title">Admin Login</v-card-title>
 
     <!-- Loader -->
     <div v-show="user === undefined" data-test="loader">Authenticating...</div>
 
     <!-- Offline instruction -->
-    <div v-show="!networkOnLine" data-test="offline-instruction">
+    <v-card-text v-show="!networkOnLine" data-test="offline-instruction">
       Please check your connection, login feature is not available offline.
-    </div>
+    </v-card-text>
 
     <p v-if="loginError">{{ loginError }}</p>
     <!-- Auth UI -->
-    <div
+    <v-card-actions>
+
+    <v-btn
       v-show="user !== undefined && !user && networkOnLine"
       data-test="login-btn"
-      class="login-btn"
+      color="blue"
       @click="login"
     >
       Login with google
-    </div>
+    </v-btn>
+    </v-card-actions>
+    </v-card>
   </div>
 </template>
 
