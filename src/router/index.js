@@ -46,17 +46,17 @@ const router = new Router({
       }
     },
     {
-      path: '/products',
-      name: 'products',
+      path: '/admins',
+      name: 'admins',
       component: () =>
-        import(/* webpackChunkName: "client-chunk-products" */ '@/views/Products.vue')
+        import(/* webpackChunkName: "client-chunk-products" */ '@/views/Admins.vue')
     },
     {
-      path: '/products/:id',
-      name: 'product',
+      path: '/Admin/:id',
+      name: 'admin',
       props: true,
       component: () =>
-        import(/* webpackChunkName: "client-chunk-product-details" */ '@/views/Product.vue')
+        import(/* webpackChunkName: "client-chunk-product-details" */ '@/views/Admin.vue')
     },
     { path: '*', redirect: '/home' }
   ]
