@@ -1,6 +1,6 @@
 export default {
   mediaData: [],
-  currentMedia: {},
+  selectedMedia: {},
 
   mediaDeletionPending: [],
   mediaCreationPending: false,

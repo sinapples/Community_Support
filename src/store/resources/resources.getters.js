@@ -2,14 +2,14 @@ import { find } from 'lodash'
 
 export default {
   /**
-   * Check if a product has deletion pending
+   * Check if a media has deletion pending
    */
-  isProductDeletionPending: state => productId =>
-    state.productDeletionPending.includes(productId),
+  isMediaDeletionPending: state => mediaId =>
+    state.mediaDeletionPending.includes(mediaId),
 
   /**
-   * Get product by id
+   * Get media by id
    */
-  getProductById: state => productId =>
-    find(state.products, product => product.id === productId)
+  getMediaById: state => mediaId =>
+    find(state.mediaData, media => media.id === mediaId)
 }

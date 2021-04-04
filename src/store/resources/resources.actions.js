@@ -1,51 +1,67 @@
-import UserProductsDB from '@/firebase/user-products-db'
 import ResourcesAsianMedia from '@/firebase/resources-asian-media'
 
 export default {
   /**
-   * Fetch products of current loggedin user
+   * Fetch medias of current loggedin user
    */
   getMedia: async ({ commit }) => {
     const db = new ResourcesAsianMedia()
 
     const media = await db.readAll()
+
     commit('setMedia', media)
   },
 
   /**
-   * Create a product for current loggedin user
+   * Create a media for current loggedin user
    */
-  createMedia: async ({ commit }, product) => {
+  createMedia: async ({ commit }, media) => {
     const userProductDb = new ResourcesAsianMedia()
 
     commit('setMediaCreationPending', true)
-    const createdProduct = await userProductDb.create(product)
+    const createdProduct = await userProductDb.create(media)
     commit('addMedia', createdProduct)
     commit('setMediaCreationPending', false)
   },
 
   /**
-   * Create a new product for current loggedin user and reset product name input
+   * Create a media for current loggedin user
    */
-  triggerAddMediaAction: ({ dispatch, state, commit }) => {
-    if (state.productNameToCreate === '') return
+  updateMedia: async ({ dispatch, commit }, media) => {
+    const userProductDb = new ResourcesAsianMedia()
 
-    const product = { name: state.productNameToCreate }
-    commit('setProductNameToCreate', '')
-    dispatch('createUserProduct', product)
+    commit('setMediaCreationPending', true)
+    await userProductDb.update(media)
+    commit('setMediaCreationPending', false)
+    dispatch('getMedia')
+    // const media = await userProductDb.readAll()
+
+    // commit('setMedia', media)
   },
 
   /**
-   * Delete a user product from its id
+   * Create a new media for current loggedin user and reset media name input
    */
-  deleteUserProduct: async ({ rootState, commit, getters }, productId) => {
-    if (getters.isProductDeletionPending(productId)) return
+  triggerAddMediaAction: ({ dispatch, state, commit }) => {
+    if (state.mediaNameToCreate === '') return
 
-    const userProductsDb = new UserProductsDB(rootState.authentication.user.id)
+    const media = { name: state.mediaNameToCreate }
+    commit('setProductNameToCreate', '')
+    dispatch('createUserProduct', media)
+  },
 
-    commit('addProductDeletionPending', productId)
-    await userProductsDb.delete(productId)
-    commit('removeProductById', productId)
-    commit('removeProductDeletionPending', productId)
+  /**
+   * Delete a user media from its id
+   */
+  deleteMedia: async ({ dispatch, commit, getters }, mediaId) => {
+    if (getters.isMediaDeletionPending(mediaId)) return
+
+    const userProductsDb = new ResourcesAsianMedia()
+
+    commit('addProductDeletionPending', mediaId)
+    await userProductsDb.delete(mediaId)
+    commit('removeProductById', mediaId)
+    commit('removeProductDeletionPending', mediaId)
+    dispatch('getMedia')
   }
 }

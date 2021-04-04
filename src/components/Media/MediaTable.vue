@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-data-table
-      :items="media"
+      :items="mediaData"
       :headers="headers"
       :items-per-page="10"
       class="elevation-1"
@@ -26,7 +26,12 @@
         </v-card-title>
       </template>
       <template v-slot:[`item.action`]="{ item }">
-        <v-btn icon color="error" @click.stop="deleteRow(item)">
+        <v-btn
+          icon
+          color="error"
+          :loading="isMediaDeletionPending(deleteItem.id)"
+          @click.stop="deleteRow(item)"
+        >
           <v-icon>mdi-delete</v-icon></v-btn
         >
       </template>
@@ -35,8 +40,7 @@
 </template>
 
 <script>
-import ResourcesAsianMedia from '@/firebase/resources-asian-media'
-import { mapActions, mapState } from 'vuex'
+import { mapState, mapMutations, mapActions, mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -44,7 +48,7 @@ export default {
   },
   data() {
     return {
-      mediaData: [],
+      // mediaData: [],
       headers: [
         {
           text: '',
@@ -96,52 +100,37 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters('products', ['isProductDeletionPending']),
-    ...mapState('resources', ['media']),
-    ...mapState('app', ['networkOnLine'])
+    ...mapState('resources', ['mediaData', 'selectedMedia']),
+    ...mapGetters('resources', ['isMediaDeletionPending'])
   },
-  watch: {
-    async refresh() {
-      this.updateTable()
-    }
-  },
+  watch: {},
 
-  async mounted() {
-    // if (!this.media) {
-    mapActions('app', ['getMedia'])
-    // }
-  },
   methods: {
+    ...mapMutations('resources', ['setSelectedMedia']),
+    ...mapActions('resources', ['deleteMedia']),
     deleteRow(item) {
       console.log(`delete ${item.name}`)
       this.deleteItem = item
     },
-    async updateTable() {
-      const db = new ResourcesAsianMedia()
-      this.mediaData = await db.readAll()
-    },
+
     onRowClick(item) {
       this.deleteItem = {}
-      this.$emit('media-row-click', item)
-    },
-    addMedia() {
-      const db = new ResourcesAsianMedia()
-      const data = {
-        type: this.type,
-        name: this.name,
-        url: this.url,
-        author: this.author,
-        about: this.about,
-        description: this.description,
-        mediaTypes: this.mediaTypes
+
+      console.log(item)
+      if (item === this.selectedMedia) {
+        this.setSelectedMedia({})
+      } else {
+        this.setSelectedMedia(item)
       }
-      db.create(data)
     },
-    async confirmDelete() {
-      // console.log(JSON.stringify(this.deleteItem))
-      const db = new ResourcesAsianMedia()
-      await db.delete(this.deleteItem.id)
-      await this.updateTable()
+    confirmDelete() {
+      console.log()
+      if (this.selectedMedia.id === this.deleteItem.id) {
+        this.setSelectedMedia({})
+      }
+
+      this.deleteMedia(this.deleteItem.id)
+      this.deleteItem = {}
     }
   }
 }
